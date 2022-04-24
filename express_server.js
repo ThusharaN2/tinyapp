@@ -74,6 +74,11 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register",(req,res) => {
+  if (users.email === "" || users.password === "") {
+    res.status(400).send("Status Code: 400, Bad Request.")
+  } else if(users.email === email) {
+    return res.status(400).send("Looks like the email provided is already registed")
+  }
   const randomUserID = generateRandomString();
   users[randomUserID] = {
     id: randomUserID,
