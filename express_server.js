@@ -12,6 +12,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
 function generateRandomString() { //unique shortURL
   let randomString = "";
   const randomChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -34,7 +47,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const templateVars = { urls: urlDatabase, user: res.cookie.user_id };
   res.render("urls_index", templateVars);
 });
 
@@ -55,13 +68,30 @@ const longURL = urlDatabase[req.params.shortURL].longURL;
 res.redirect(longURL);
 });
 
+app.get("/register", (req, res) => {
+  let templateVars = {user: res.cookie.user_id }
+  res.render("registration",templateVars);
+});
+
+app.post("/register",(req,res) => {
+  const randomUserID = generateRandomString();
+  users[randomUserID] = {
+    id: randomUserID,
+    email: req.body.email,
+    password: req.body.password,
+  }
+  console.log(users);
+  res.cookie("user_id", randomUserID);
+  res.redirect("/urls");
+});
+
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
+  res.cookie("user_id", users.user_id);
   res.redirect('/urls')
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 })
 
@@ -76,12 +106,12 @@ app.post('/urls/:id', (req, res) => {
 })
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = {username: req.cookies['username']}
+  const templateVars = {user: res.cookie.user_id}
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL], username: req.cookies["username"]};
+  const templateVars = { shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL], user: res.cookie.user_id};
   res.render("urls_show", templateVars);
 });
 
