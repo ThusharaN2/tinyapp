@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <%- include('partials/_header') %>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
@@ -11,9 +12,6 @@
   </head>
 
   <body>
-
-    <%- include('partials/_header') %>
-
     <main style="margin: 1em;">
       <h3>Create TinyURL</h3>
       <form class="form-inline" action="/urls" method="POST">

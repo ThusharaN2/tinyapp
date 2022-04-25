@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <%- include('partials/_header') %>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
@@ -12,23 +11,25 @@
   </head>
 
   <body>
+    <%- include('partials/_header') %>
+
   <main style="margin: 1em;" class="align-items-center">
-    <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Register</p>
+    <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Register New Account</p>
     <form class="mx-1 mx-md-4 d-flex justify-content-center" action="/register" method="POST">
 
       <div class="mb-4">
         <div class="form-outline mb-0">
-          <label for="email">Email</label>
+          <label for="email" class="align-items-center">Email</label>
           <input type="email" name="email" placeholder="Email"/>
         </div>
-
+        
         <div class="form-outline mb-0">
-          <label for="password">Password</label>
-          <input type="password" name="password" placeholder="Password"/>  
-          <button type="submit" >Register</button>
+          <label for="password"  class="align-items-center"style="margin-top: 2em">Password</label>
+          <input type="password" name="password" placeholder="Password">  
         </div>
-      </div>
+        <button type="submit" class="bten bten-primary" style="margin-top: 2em">Register</button>
 
+      </div>
     </form>
   </main>
 
