@@ -20,7 +20,6 @@
           <th scope="col">Long URL</th>
           <th scope ="col">Delete</th>
           <th scope ="col">Edit</th>
-
         </tr>
       </thead>
       <tbody>
@@ -30,7 +29,6 @@
             <td><%= urls[url].longURL %></td>
             <td><form method="POST" action="/urls/<%= url %>/delete"><button type="delete">Delete</button></form></td>
            <td><form method="POST" action="/urls/<%= url %>/edit"><button type="edit">Edit</button> </form></td> 
-            <td> </td>
           </tr>
         <% } %>
       </tbody>
