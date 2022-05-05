@@ -1,12 +1,25 @@
+//express
 const express = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+
+// default port 8080
+const PORT = 8080; 
+
+//body parser
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+
+//cookie session
 const cookieSession= require("cookie-session");
 app.use(cookieSession({name: "session", keys: ["userID"]}));
+
+//ejs
 app.set("view engine", "ejs");
+
+//helper functions
 const { generateRandomString, urlsForUser, lookForEmail} = require("./helpers");
+
+//password bcrypt
 const bcrypt = require("bcryptjs");
 
 const urlDatabase = {
@@ -37,7 +50,7 @@ app.get("/", (req, res) => {
   if(!req.session.userID) {
 res.redirect("/login")
   }
-  res.send("Hello!");
+  res.redirect("/urls");
 });
 
 
