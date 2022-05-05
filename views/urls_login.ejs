@@ -7,20 +7,22 @@
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>Registration</title> 
+  <title>Login</title> 
 </head>
+
 <body>
-  <main style="margin: 1em;">
+  <main style="margin: 1em; display:flex; flex-direction:column; align-items:center;">
     <h3>Login</h3>
     <form action="/login"  method="POST">
       <div>
-        <label for="email"> Email </label>
-        <input type="email" name="email">
+        <label for="email" > Email </label>
+        <input type="email" name="email"  style="width: 250px">
       </div>
       <div>
-        <label for="password"> Password </label>
-        <input type="password"  name="password">
-        <button type="submit" position: > Login </button>
+        <label for="password" > Password </label>
+        <input type="password"  name="password"  style="width: 250px">
+        </div>
+        <button type="submit" > Login </button >
       </div>
     </form>
   </main>
