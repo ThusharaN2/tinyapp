@@ -48,7 +48,7 @@ const users = {
     password: "dishwasher-funk"
   },
   "user3RandomID": {
-    id: "user2RandomID",
+    id: "user3RandomID",
     email: "thusharan@hotmail.com",
     password: "$2a$10$pEP5YSNCSGJ13VN57afPQuHk7CrbfnzLrAfNQfkCIQvDtBJmVu7nC",
   }
@@ -88,8 +88,8 @@ app.post("/register", (req, res) => {
   if (userObj.email === "" || userObj.password === "") {
     res.status(400).send("Status Code: 400, Bad Request.");
   } else if (!userEmail) {
-    users.randomUserID = userObj
-    req.session.user_id = randomUserID
+    users[randomUserID] = userObj 
+    req.session.user_id = randomUserID 
     return res.redirect("/urls");
   } else {
     return res.status(400).send("Oops, looks like the email provided is already registed");
@@ -99,7 +99,8 @@ app.post("/register", (req, res) => {
 
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlsForUser(req.session.userID, urlDatabase), user: users[req.session.user_id] };
+  const sessionUserID = req.session.user_id
+  const templateVars = { urls: urlsForUser(req.session.user_id, urlDatabase), user: users[sessionUserID] };
   res.render("urls_index", templateVars);
 });
 
@@ -165,7 +166,11 @@ app.post("/login", (req, res) => {
   const userPassword = getUserByEmail(userEmail, users)?.password
   if (email === userEmail && password) {
     if (bcrypt.compareSync(password, userPassword)) {
-      req.session.user_id = "hii"
+      for (let user in users) {
+        if (users[user] === userEmail) {
+          req.session.user_id = user;
+        }
+      }
       res.redirect("/urls")
     }
   } else {
@@ -176,7 +181,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.session('user_id');
+  req.session.user_id = null;
   res.redirect('/urls');
 });
 
