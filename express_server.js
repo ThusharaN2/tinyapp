@@ -63,13 +63,7 @@ app.get("/", (req, res) => {
   }
 });
 
-//get for login that if logged in, redirects to urls
-app.get("/login", (req, res) => {
-  if (req.session.userID) res.redirect('/urls');
-  const templateVars = { user: users[req.session.user_id] };
-  res.render("urls_login", templateVars);
-});
-
+//Register GET & POST
 app.get("/register", (req, res) => {
   let templateVars = { user: users[req.session.user_id] };
   res.render("urls_registration", templateVars);
@@ -98,6 +92,42 @@ app.post("/register", (req, res) => {
 });
 
 
+//Login GET & POST
+app.get("/login", (req, res) => {
+  if (req.session.userID) res.redirect('/urls');
+  const templateVars = { user: users[req.session.user_id] };
+  res.render("urls_login", templateVars);
+});
+
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const userEmail = lookForEmail(email, users)
+  const userPassword = getUserByEmail(userEmail, users)?.password
+  if (email === userEmail && password) {
+    if (bcrypt.compareSync(password, userPassword)) {
+      for (let user in users) {
+        if (users[user] === userEmail) {
+          req.session.user_id = user;
+        }
+      }
+      res.redirect("/urls")
+    }
+  } else {
+    res.status(403).send("Status code 403: Email or password is incorect")
+    // } else {
+    //   res.status(403).send("Status Code 403: Email not registered")
+  }
+});
+
+//Logout
+app.post("/logout", (req, res) => {
+  req.session.user_id = null;
+  res.redirect('/urls');
+});
+
+
+//urls routes
 app.get("/urls", (req, res) => {
   const sessionUserID = req.session.user_id
   const templateVars = { urls: urlsForUser(req.session.user_id, urlDatabase), user: users[sessionUserID] };
@@ -112,7 +142,7 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const templateVars = { user: users[req.session.user_id] };
   res.render("urls_new", templateVars);
-  if (!req.session.userID) {
+  if (req.session.userID) {
     res.redirect("/login")
   } else {
     res.render("urls_new", templateVars)
@@ -129,7 +159,6 @@ app.get("/urls/:shortURL", (req, res) => {
     res.status(400).send("Error 400: You aren't logged in");
   }
 });
-
 
 
 app.post("/urls/:id", (req, res) => {
@@ -159,31 +188,7 @@ app.post("/urls/:shortURL/delete", (req, res) => { //removes URL resource
   }
 });
 
-app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const userEmail = lookForEmail(email, users)
-  const userPassword = getUserByEmail(userEmail, users)?.password
-  if (email === userEmail && password) {
-    if (bcrypt.compareSync(password, userPassword)) {
-      for (let user in users) {
-        if (users[user] === userEmail) {
-          req.session.user_id = user;
-        }
-      }
-      res.redirect("/urls")
-    }
-  } else {
-    res.status(403).send("Status code 403: Email or password is incorect")
-    // } else {
-    //   res.status(403).send("Status Code 403: Email not registered")
-  }
-});
 
-app.post("/logout", (req, res) => {
-  req.session.user_id = null;
-  res.redirect('/urls');
-});
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);

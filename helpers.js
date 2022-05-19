@@ -7,6 +7,7 @@ function generateRandomString() { //unique shortURL
   return randomString;
 }
 
+//finds user by email in db
 const getUserByEmail = (email, database) => {
   for (const key in database) {
     if (database[key].email === email) {
@@ -16,6 +17,7 @@ const getUserByEmail = (email, database) => {
   return undefined;
 };
 
+//looks through db for email
 const lookForEmail = (email, database) => {
   for (let user in database) {
     if (email === database[user].email) {
@@ -25,6 +27,7 @@ const lookForEmail = (email, database) => {
   return undefined;
 };
 
+//accesses the urls for the user
 const urlsForUser = (id, database) => {
   const userURLs = {};
   for (const url in database) {
