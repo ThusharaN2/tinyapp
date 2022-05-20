@@ -65,6 +65,9 @@ app.get("/", (req, res) => {
 
 //Register GET
 app.get("/register", (req, res) => {
+  if (req.session.user_id) {
+    res.redirect('/urls');
+  }
   let templateVars = { user: users[req.session.user_id] };
   res.render("urls_registration", templateVars);
 });
@@ -133,7 +136,7 @@ app.get("/urls", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  if (longURL === undefined) {
+  if (longURL === undefined) { //error messg if undefined
     return res.status(400).send("This url does not exist");
   }
   res.redirect(longURL);
@@ -141,12 +144,11 @@ app.get("/u/:shortURL", (req, res) => {
 
 //authorized user can make a new shortURL
 app.get("/urls/new", (req, res) => {
+  if (!req.session.user_id) {
+    res.status(400).send("ERROR: You are not logged in")
+  } else {
   const templateVars = { user: users[req.session.user_id] };
   res.render("urls_new", templateVars);
-  if (req.session.user_id) {
-    res.redirect("/login")
-  } else {
-    res.render("urls_new", templateVars)
   }
 });
 
