@@ -7,15 +7,6 @@ function generateRandomString() { //unique shortURL
   return randomString;
 }
 
-//finds user by email in db
-// const getUserByEmail = (email, database) => {
-//   for (const key in database) {
-//     if (database[key].email === email) {
-//       return database[key];
-//     }
-//   }
-//   return undefined;
-// };
 
 //fcn makes sure that the email is same as email in db
 const lookForEmail = (email, database) => {
