@@ -1,4 +1,4 @@
-function generateRandomString() { //unique shortURL
+const generateRandomString = () => { //unique shortURL
   let randomString = "";
   const randomChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   while (randomString.length < 6) {
