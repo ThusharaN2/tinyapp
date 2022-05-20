@@ -17,7 +17,7 @@ app.use(cookieSession({ name: "session", keys: ["userID"] }));
 app.set("view engine", "ejs");
 
 //helper functions
-const { generateRandomString, urlsForUser, lookForEmail, getUserByEmail} = require("./helpers");
+const { generateRandomString, urlsForUser, lookForEmail, } = require("./helpers");
 
 //password bcrypt
 const bcrypt = require("bcryptjs");
@@ -78,20 +78,20 @@ app.post("/register", (req, res) => {
     email: req.body.email,
     password: bcrypt.hashSync(password, salt)
   };
-  if (!email|| !password) {
+  if (!email || !password) {
     return res.status(400).send("Please provide a valid email and address!");
   }
-  const userEmail = lookForEmail(email, users)
+  const user = lookForEmail(email, users)
+  if (user) {
+    return res.status(400).send("Oops, looks like the email provided is already registed");
+  }
   if (!userObj.email || !userObj.password) {
     res.status(400).send("Status Code: 400, Bad Request.");
-  } else if (!userEmail) {
-    users[randomUserID] = userObj 
+  } else {
+    users[randomUserID] = userObj
     req.session.user_id = randomUserID //sets cookie session
     return res.redirect("/urls");
-  } else {
-    return res.status(400).send("Oops, looks like the email provided is already registed");
-  };
-  res.redirect("/urls")
+  }
 });
 
 
@@ -105,17 +105,10 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const userEmail = lookForEmail(email, users)
-  const userPassword = getUserByEmail(userEmail, users)?.password
-  if (email === userEmail && password) {
-    if (bcrypt.compareSync(password, userPassword)) {
-      for (let user in users) {
-        if (users[user].email === userEmail) {
-          req.session.user_id = user;
-        }
-      }
-      res.redirect("/urls")
-    }
+  const user = lookForEmail(email, users)
+  if (user && bcrypt.compareSync(password, user.password)) {
+    req.session.user_id = user.id;
+    res.redirect("/urls")
   } else {
     res.status(403).send("Status code 403: Email or password is incorect")
   }
@@ -131,7 +124,7 @@ app.post("/logout", (req, res) => {
 //urls routes
 app.get("/urls", (req, res) => {
   const sessionUserID = req.session.user_id
-  const templateVars = { urls: urlsForUser(req.session.user_id, urlDatabase), user: users[sessionUserID] };1
+  const templateVars = { urls: urlsForUser(req.session.user_id, urlDatabase), user: users[sessionUserID] }; 1
   res.render("urls_index", templateVars);
 });
 

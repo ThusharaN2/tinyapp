@@ -8,20 +8,20 @@ function generateRandomString() { //unique shortURL
 }
 
 //finds user by email in db
-const getUserByEmail = (email, database) => {
-  for (const key in database) {
-    if (database[key].email === email) {
-      return database[key];
-    }
-  }
-  return undefined;
-};
+// const getUserByEmail = (email, database) => {
+//   for (const key in database) {
+//     if (database[key].email === email) {
+//       return database[key];
+//     }
+//   }
+//   return undefined;
+// };
 
-//looks through db for email
+//fcn makes sure that the email is same as email in db
 const lookForEmail = (email, database) => {
   for (let user in database) {
     if (email === database[user].email) {
-      return email;
+      return database[user];
     }
   }
   return undefined;
@@ -38,4 +38,4 @@ const urlsForUser = (id, database) => {
   return userURLs;
 };
 
-module.exports = { generateRandomString, getUserByEmail, urlsForUser, lookForEmail}
+module.exports = { generateRandomString, urlsForUser, lookForEmail}
