@@ -78,6 +78,9 @@ app.post("/register", (req, res) => {
     email: req.body.email,
     password: bcrypt.hashSync(password, salt)
   };
+  if (email === "" || password === "") {
+    return res.status(400).send("Please provide a valid email and address!");
+  }
   const userEmail = lookForEmail(email, users)
   if (userObj.email === "" || userObj.password === "") {
     res.status(400).send("Status Code: 400, Bad Request.");
@@ -174,7 +177,6 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL
   const userID = req.session["user_id"]
   urlDatabase[shortURL] = { longURL, userID }
-  console.log(urlDatabase)
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -186,8 +188,6 @@ app.post("/urls/:shortURL/delete", (req, res) => { //removes URL resource
     res.status(403).send(`Error: ${statusCode} Please try again`)
   }
 });
-
-
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
