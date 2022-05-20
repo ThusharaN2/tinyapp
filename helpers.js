@@ -35,6 +35,7 @@ const urlsForUser = (id, database) => {
       userURLs[url] = database[url];
     }
   }
+  console.log(userURLs)
   return userURLs;
 };
 

@@ -83,7 +83,7 @@ app.post("/register", (req, res) => {
     res.status(400).send("Status Code: 400, Bad Request.");
   } else if (!userEmail) {
     users[randomUserID] = userObj 
-    req.session.user_id = randomUserID 
+    req.session.user_id = randomUserID //sets cookie session
     return res.redirect("/urls");
   } else {
     return res.status(400).send("Oops, looks like the email provided is already registed");
@@ -94,7 +94,7 @@ app.post("/register", (req, res) => {
 
 //Login GET & POST
 app.get("/login", (req, res) => {
-  if (req.session.userID) res.redirect('/urls');
+  if (req.session.user_id) res.redirect('/urls');
   const templateVars = { user: users[req.session.user_id] };
   res.render("urls_login", templateVars);
 });
@@ -107,7 +107,7 @@ app.post("/login", (req, res) => {
   if (email === userEmail && password) {
     if (bcrypt.compareSync(password, userPassword)) {
       for (let user in users) {
-        if (users[user] === userEmail) {
+        if (users[user].email === userEmail) {
           req.session.user_id = user;
         }
       }
@@ -115,8 +115,6 @@ app.post("/login", (req, res) => {
     }
   } else {
     res.status(403).send("Status code 403: Email or password is incorect")
-    // } else {
-    //   res.status(403).send("Status Code 403: Email not registered")
   }
 });
 
@@ -130,7 +128,7 @@ app.post("/logout", (req, res) => {
 //urls routes
 app.get("/urls", (req, res) => {
   const sessionUserID = req.session.user_id
-  const templateVars = { urls: urlsForUser(req.session.user_id, urlDatabase), user: users[sessionUserID] };
+  const templateVars = { urls: urlsForUser(req.session.user_id, urlDatabase), user: users[sessionUserID] };1
   res.render("urls_index", templateVars);
 });
 
@@ -142,7 +140,7 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const templateVars = { user: users[req.session.user_id] };
   res.render("urls_new", templateVars);
-  if (req.session.userID) {
+  if (req.session.user_id) {
     res.redirect("/login")
   } else {
     res.render("urls_new", templateVars)
@@ -152,7 +150,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   if (!req.session.user_id) {
     res.status(400).send("Error 404: Not logged in");
-  } else if (urlDatabase[req.params.shortURL].userID === req.session["userID"]) {
+  } else if (urlDatabase[req.params.shortURL].userID === req.session["user_id"]) {
     const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.session["userID"]] };
     res.render("urls_show", templateVars);
   } else {
@@ -160,11 +158,11 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 });
 
-
+//edit fcn
 app.post("/urls/:id", (req, res) => {
-  if (urlDatabase[req.params.id].userID === req.session["userID"]) {
-    let longURL = req.body.longURL
-    urlDatabase[req.params.id.longURL] = req.body.longURL;
+  console.log(req.body)
+  if (urlDatabase[req.params.id].userID === req.session["user_id"]) {
+    urlDatabase[req.params.id].longURL = req.body.longURL;
     res.redirect('/urls');
   } else {
     res.status(403).send(`Error: ${statusCode} Try again`)
@@ -174,13 +172,14 @@ app.post("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL
-  const userID = req.session["userID"]
+  const userID = req.session["user_id"]
   urlDatabase[shortURL] = { longURL, userID }
+  console.log(urlDatabase)
   res.redirect(`/urls/${shortURL}`);
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => { //removes URL resource
-  if (urlDatabase[req.params.shortURL].userID === req.session["userID"]) {
+  if (urlDatabase[req.params.shortURL].userID === req.session["user_id"]) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
   } else {
