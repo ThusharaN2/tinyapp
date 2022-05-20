@@ -154,15 +154,17 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   if (!req.session.user_id) {
     res.status(400).send("Error 404: Not logged in");
-  } else if (urlDatabase[req.params.shortURL].userID === req.session["user_id"]) {
+    return;
+  } 
+  if (urlDatabase[req.params.shortURL].userID !== req.session["user_id"]) {
+    res.status(400).send("Error: You are not authorized to edit this URL")
+    return;
+  } //makes sure if it is an authorized user before proceeding
     const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.session["userID"]] };
     res.render("urls_show", templateVars);
-  } else {
-    res.status(400).send("Error 400: You aren't logged in");
-  }
-});
+  });
 
-//edit fcn
+//Edit fcn
 app.post("/urls/:id", (req, res) => {
   if (urlDatabase[req.params.id].userID === req.session["user_id"]) {
     urlDatabase[req.params.id].longURL = req.body.longURL;
