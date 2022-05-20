@@ -63,12 +63,13 @@ app.get("/", (req, res) => {
   }
 });
 
-//Register GET & POST
+//Register GET
 app.get("/register", (req, res) => {
   let templateVars = { user: users[req.session.user_id] };
   res.render("urls_registration", templateVars);
 });
 
+//Register POST
 app.post("/register", (req, res) => {
   const email = req.body.email
   const password = req.body.password
@@ -95,13 +96,14 @@ app.post("/register", (req, res) => {
 });
 
 
-//Login GET & POST
+//Login GET
 app.get("/login", (req, res) => {
   if (req.session.user_id) res.redirect('/urls');
   const templateVars = { user: users[req.session.user_id] };
   res.render("urls_login", templateVars);
 });
 
+//Login POST
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -128,11 +130,16 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
+  if (longURL === undefined) {
+    return res.status(400).send("This url does not exist");
+  }
   res.redirect(longURL);
 });
 
+//authorized user can make a new shortURL
 app.get("/urls/new", (req, res) => {
   const templateVars = { user: users[req.session.user_id] };
   res.render("urls_new", templateVars);
@@ -143,6 +150,7 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+//Page where you can edit URL if you're the authorized user
 app.get("/urls/:shortURL", (req, res) => {
   if (!req.session.user_id) {
     res.status(400).send("Error 404: Not logged in");
@@ -164,6 +172,7 @@ app.post("/urls/:id", (req, res) => {
   }
 });
 
+//adds shortURL 
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL
@@ -172,11 +181,12 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => { //removes URL resource
+ //deletes a shortURL in user db 
+app.post("/urls/:shortURL/delete", (req, res) => {
   if (urlDatabase[req.params.shortURL].userID === req.session["user_id"]) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
-  } else {
+  } else { //this makes sure that only the authorized user can delete the shortURL
     res.status(403).send(`Error: ${statusCode} Please try again`)
   }
 });
