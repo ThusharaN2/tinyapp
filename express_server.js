@@ -147,24 +147,24 @@ app.get("/urls/new", (req, res) => {
   if (!req.session.user_id) {
     res.status(400).send("ERROR: You are not logged in")
   } else {
-  const templateVars = { user: users[req.session.user_id] };
-  res.render("urls_new", templateVars);
+    const templateVars = { user: users[req.session.user_id] };
+    res.render("urls_new", templateVars);
   }
 });
 
 //Page where you can edit URL if you're the authorized user
 app.get("/urls/:shortURL", (req, res) => {
   if (!req.session.user_id) {
-    res.status(400).send("Error 404: Not logged in");
+    res.status(400).send("Error 404: You are not logged in");
     return;
-  } 
+  }
   if (urlDatabase[req.params.shortURL].userID !== req.session["user_id"]) {
     res.status(400).send("Error: You are not authorized to edit this URL")
     return;
   } //makes sure if it is an authorized user before proceeding
-    const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.session["userID"]] };
-    res.render("urls_show", templateVars);
-  });
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.session["userID"]] };
+  res.render("urls_show", templateVars);
+});
 
 //Edit fcn
 app.post("/urls/:id", (req, res) => {
@@ -178,14 +178,18 @@ app.post("/urls/:id", (req, res) => {
 
 //adds shortURL 
 app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
-  const longURL = req.body.longURL
-  const userID = req.session["user_id"]
-  urlDatabase[shortURL] = { longURL, userID }
-  res.redirect(`/urls/${shortURL}`);
+  if (!req.session.user_id) {
+    res.status(400).send("ERROR: You must be logged in to create new links.");
+  } else {
+    const shortURL = generateRandomString();
+    const longURL = req.body.longURL
+    const userID = req.session["user_id"]
+    urlDatabase[shortURL] = { longURL, userID }
+    res.redirect(`/urls/${shortURL}`);
+  }
 });
 
- //deletes a shortURL in user db 
+//deletes a shortURL in user db 
 app.post("/urls/:shortURL/delete", (req, res) => {
   if (urlDatabase[req.params.shortURL].userID === req.session["user_id"]) {
     delete urlDatabase[req.params.shortURL];
