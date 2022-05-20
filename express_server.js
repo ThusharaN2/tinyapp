@@ -78,11 +78,11 @@ app.post("/register", (req, res) => {
     email: req.body.email,
     password: bcrypt.hashSync(password, salt)
   };
-  if (email === "" || password === "") {
+  if (!email|| !password) {
     return res.status(400).send("Please provide a valid email and address!");
   }
   const userEmail = lookForEmail(email, users)
-  if (userObj.email === "" || userObj.password === "") {
+  if (!userObj.email || !userObj.password) {
     res.status(400).send("Status Code: 400, Bad Request.");
   } else if (!userEmail) {
     users[randomUserID] = userObj 
@@ -163,7 +163,6 @@ app.get("/urls/:shortURL", (req, res) => {
 
 //edit fcn
 app.post("/urls/:id", (req, res) => {
-  console.log(req.body)
   if (urlDatabase[req.params.id].userID === req.session["user_id"]) {
     urlDatabase[req.params.id].longURL = req.body.longURL;
     res.redirect('/urls');
