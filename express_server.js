@@ -66,7 +66,7 @@ app.get("/", (req, res) => {
 //Register GET
 app.get("/register", (req, res) => {
   if (req.session.user_id) {
-    res.redirect('/urls');
+    return res.redirect('/urls');
   }
   let templateVars = { user: users[req.session.user_id] };
   res.render("urls_registration", templateVars);
@@ -119,9 +119,9 @@ app.post("/login", (req, res) => {
   }
 });
 
-//Logout
+//Logout POST
 app.post("/logout", (req, res) => {
-  req.session.user_id = null;
+  req.session= null; 
   res.redirect('/urls');
 });
 
@@ -155,12 +155,10 @@ app.get("/urls/new", (req, res) => {
 //Page where you can edit URL if you're the authorized user
 app.get("/urls/:shortURL", (req, res) => {
   if (!req.session.user_id) {
-    res.status(400).send("Error 404: You are not logged in");
-    return;
+    return res.status(400).send("Error 404: You are not logged in");
   }
   if (urlDatabase[req.params.shortURL].userID !== req.session["user_id"]) {
-    res.status(400).send("Error: You are not authorized to edit this URL")
-    return;
+    return res.status(400).send("Error: You are not authorized to edit this URL")
   } //makes sure if it is an authorized user before proceeding
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.session["userID"]] };
   res.render("urls_show", templateVars);
@@ -179,7 +177,7 @@ app.post("/urls/:id", (req, res) => {
 //adds shortURL 
 app.post("/urls", (req, res) => {
   if (!req.session.user_id) {
-    res.status(400).send("ERROR: You must be logged in to create new links.");
+    return res.status(400).send("ERROR: You must be logged in to create new links.");
   } else {
     const shortURL = generateRandomString();
     const longURL = req.body.longURL
