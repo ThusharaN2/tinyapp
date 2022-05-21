@@ -1,4 +1,5 @@
-const generateRandomString = () => { //unique shortURL
+//unique shortURL
+const generateRandomString = () => { 
   let randomString = "";
   const randomChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   while (randomString.length < 6) {
@@ -6,7 +7,6 @@ const generateRandomString = () => { //unique shortURL
   }
   return randomString;
 }
-
 
 //fcn makes sure that the email is same as email in db
 const lookForEmail = (email, database) => {
